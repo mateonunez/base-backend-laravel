@@ -1,7 +1,4 @@
 <?php
-
-use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +10,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+\Illuminate\Support\Facades\Route::get('/', function () {
+    return \Illuminate\Support\Facades\Response::json([
+        'success' => false,
+        'message' => 'Nothing here'
+    ]);
 });
