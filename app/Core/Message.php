@@ -21,6 +21,7 @@ class Message
     public const YOU_CANT = "[00010] - You can't.";
     public const HISTORICIZING_KO = "[00011] - Error during batch order historicizing.";
     public const DELETE_KO_RELATIONSHIP = "[00012] - You can't delete. There are associated entities.";
+    public const BAD_REQUEST = "[00013] - Bad request.";
 
     /**
      * Messages
