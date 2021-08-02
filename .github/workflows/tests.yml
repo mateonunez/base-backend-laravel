@@ -1,7 +1,7 @@
 name: Pull Request Staging Workflow
 
 on:
-  push:
+  pull_request:
 
 jobs:
   laravel-tests:
@@ -38,7 +38,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions}}
-      - name: Get Composer cache Directory 2
+      - name: Get Composer Cache Directory 2
         id: composer-cache
         run: |
           echo "::set-output name=dir::$(composer config cache-files-dir)"
@@ -49,7 +49,7 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
-      - name: Cache PHP dependencies
+      - name: Cache PHP Dependencies
         uses: actions/cache@v2
         id: vendor-cache
         with:
@@ -60,7 +60,7 @@ jobs:
       - name: Install Dependencies
         if: steps.vendor-cache.outputs.cache-hit != 'true'
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-      - name: Generate testing key
+      - name: Generate Testing Key
         run: php artisan key:generate --env=testing
       - name: Directory Permissions
         run: chmod -R 777 storage bootstrap/cache
@@ -74,13 +74,13 @@ jobs:
           DB_USER: root
         run: php artisan migrate
 
-      - name: Show dir
+      - name: Show Dir
         run: pwd
       - name: PHP Version
         run: php --version
 
       # Code quality
-      - name: Execute tests via PHPUnit
+      - name: Execute Tests Via PHPUnit
         env:
           APP_ENV: testing
           DB_CONNECTION: mysql
