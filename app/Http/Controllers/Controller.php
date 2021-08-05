@@ -22,11 +22,6 @@ class Controller extends BaseController
     protected $entityClass;
 
     /**
-     * @var mixed
-     */
-    protected $storeRequestClass;
-
-    /**
      * @var int
      */
     protected $perPage = 33;
