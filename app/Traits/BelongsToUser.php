@@ -7,10 +7,11 @@ use App\Core\SchemaUtils;
 trait BelongsToUser
 {
     /**
-     * Gets the store validation rule using Schema to
-     * determinates columns length
+     * Fills the user column with logged user id
      *
-     * @return mixed
+     * @param string $userColumn
+     *
+     * @return void
      */
     public function fillUser(
         string $userColumn = 'user_id'
