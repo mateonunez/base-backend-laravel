@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Core\Helper;
 use App\Core\Message;
 use Illuminate\Http\Request;
 use App\Core\ControllerUtils;
@@ -19,6 +20,11 @@ class Controller extends BaseController
      * @var mixed
      */
     protected $entityClass;
+
+    /**
+     * @var mixed
+     */
+    protected $storeRequestClass;
 
     /**
      * @var int
@@ -129,6 +135,72 @@ class Controller extends BaseController
             // Log::error(Message::SHOW_KO, __METHOD__, new $this->entityClass(), $request, $ex);
 
             return $this->sendError(Message::SHOW_KO);
+        }
+    }
+
+    /**
+     * Base method to create a new entity
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request)
+    {
+        try {
+            if (is_null($this->entityClass)) {
+                return $this->sendError(Message::BAD_REQUEST, [], 400);
+            }
+
+            // Check if entity uses StoreValidation trait
+            $entityUsesStoreValidation = Helper::classUsesTrait(
+                App\Traits\StoreValidation::class,
+                $this->entityClass::class
+            );
+            if ($entityUsesStoreValidation) {
+                $storeValidationRules = $this->entityClass->getStoreValidationRules();
+                $validated = $request->validate($storeValidationRules);
+
+                // TODO to be implement
+                dd($validated);
+            }
+
+            // Retrieving data from request
+            $data = $request->all();
+
+            // Initializing a new entity
+            $entity = new $this->entityClass;
+
+            // Filling all data in requset
+            $entity->fill($data);
+
+            // Check if entity uses BelongsToUser trait
+            $entityUsesBelongsToUser = Helper::classUsesTrait(
+                \App\Traits\BelongsToUser::class,
+                $this->entityClass::class()
+            );
+            if ($entityUsesBelongsToUser && !isset($request->user_id)) {
+                $entity->fillUser();
+
+                dd($entity);
+            }
+
+            // Saves entity with data
+            $entity->save();
+
+            // TODO add log
+            // Log::info(Message::CREATE_OK, __METHOD__, $entity, $request);
+
+            return $this->sendResponse(
+                $entity->fresh()->toArray(),
+                Message::CREATE_OK,
+                201
+            );
+        } catch (\Exception $ex) {
+            // TODO Add log
+            // Log::error(Message::CREATE_KO, __METHOD__, new $this->entityClass(), $request, $ex);
+
+            return $this->sendError(Message::CREATE_KO);
         }
     }
 
