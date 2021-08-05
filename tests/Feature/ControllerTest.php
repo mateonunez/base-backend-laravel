@@ -28,4 +28,15 @@ class ControllerTest extends TestCase
         // Asserting Bad Request
         $response->assertStatus(400);
     }
+
+    /**
+     * @group controller
+     */
+    public function test_store_get_bad_request()
+    {
+        $response = $this->post('/api/base');
+
+        // Asserting Bad Request
+        $response->assertStatus(400);
+    }
 }
