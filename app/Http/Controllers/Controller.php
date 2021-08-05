@@ -89,6 +89,50 @@ class Controller extends BaseController
     }
 
     /**
+     * Base method to show single entity
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param mixed $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show(Request $request, $id)
+    {
+        try {
+            if (is_null($this->entityClass)) {
+                return $this->sendError(Message::BAD_REQUEST, [], 400);
+            }
+
+            $query = $request->query();
+
+            // Geting relationships
+            $relationships = ControllerUtils::getRequestRelationships($query);
+
+            $entity = $this->entityClass::with($relationships)
+                ->find($id);
+
+            if (is_null($entity)) {
+                return $this->sendNotFound();
+            }
+
+            return $this->sendResponse(
+                $entity->toArray(),
+                Message::SHOW_OK
+            );
+        } catch (\Illuminate\Database\Eloquent\RelationNotFoundException $ex) {
+            // TODO Add log
+            // Log::error(Message::RELATION_KO, __METHOD__, new $this->entityClass(), $request, $ex);
+
+            return $this->sendError(Message::RELATION_KO);
+        } catch (\Exception $ex) {
+            // TODO Add log
+            // Log::error(Message::SHOW_KO, __METHOD__, new $this->entityClass(), $request, $ex);
+
+            return $this->sendError(Message::SHOW_KO);
+        }
+    }
+
+    /**
      * Method to send response
      *
      * @param array $payload

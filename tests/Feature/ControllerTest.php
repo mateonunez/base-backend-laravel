@@ -8,14 +8,24 @@ use Tests\TestCase;
 class ControllerTest extends TestCase
 {
     /**
-     * A basic test example.
-     *
-     * @return void
+     * @group controller
      */
-    public function test_indexing_get_bad_request()
+    public function test_index_get_bad_request()
     {
-        $response = $this->get('/api');
+        $response = $this->get('/api/base');
 
+        // Asserting Bad Request
+        $response->assertStatus(400);
+    }
+
+    /**
+     * @group controller
+     */
+    public function test_show_get_bad_request()
+    {
+        $response = $this->get('/api/base/fakeId');
+
+        // Asserting Bad Request
         $response->assertStatus(400);
     }
 }

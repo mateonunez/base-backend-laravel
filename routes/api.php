@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/**
+ * Declares API resources for some entities
+ */
+
 Route::apiResources([
-    '/' => \App\Http\Controllers\Controller::class,
+    // Just for tests
+    '/base' => \App\Http\Controllers\Controller::class,
 ]);
