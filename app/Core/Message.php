@@ -22,6 +22,8 @@ class Message
     public const HISTORICIZING_KO = "[00011] - Error during batch order historicizing.";
     public const DELETE_KO_RELATIONSHIP = "[00012] - You can't delete. There are associated entities.";
     public const BAD_REQUEST = "[00013] - Bad request.";
+    public const REGISTER_KO = "[00014] - Error during registration.";
+    public const CREDENTIALS_KO = "[00015] - Invalid credentials.";
 
     /**
      * Messages
@@ -34,6 +36,7 @@ class Message
     public const UPDATE_OK = "Update successful.";
     public const DELETE_OK = "Delete successful.";
     public const MAIL_OK = "Mail sent successful.";
+    public const REGISTER_OK = "Registration successful.";
 
     /**
      * Talking with user
