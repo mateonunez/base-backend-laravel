@@ -7,12 +7,12 @@ class ModelUtils
     /**
      * Returns a boolean value indicating whether the class uses some trait
      *
-     * @param object $class
-     * @param object $trait
+     * @param mixed $class
+     * @param mixed $trait
      *
      * @return bool
      */
-    public static function usesTrait(object $class, object $trait): bool
+    public static function usesTrait(mixed $class, mixed $trait): bool
     {
         return in_array(
             $trait,
@@ -24,11 +24,11 @@ class ModelUtils
     /**
      * Return all relationships belonging to the class
      *
-     * @param object $class
+     * @param mixed $class
      *
      * @return array
      */
-    public static function relations(object $class): array
+    public static function relations(mixed $class): array
     {
         $reflector = new \ReflectionClass($class);
 
