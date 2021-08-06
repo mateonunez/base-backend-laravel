@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+/**
+ * Declares API resources for some entities
+ */
+
+Route::apiResources([
+    // Just for tests
+    '/base' => \App\Http\Controllers\Controller::class,
+]);
