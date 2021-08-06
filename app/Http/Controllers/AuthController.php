@@ -20,7 +20,7 @@ class AuthController extends Controller
             $data = $request->all();
 
             $validator = \Illuminate\Support\Facades\Validator::make($data, [
-                'name' => 'require',
+                'name' => 'required',
                 'email' => 'required|email',
                 'password' => 'required'
             ]);
@@ -29,7 +29,7 @@ class AuthController extends Controller
                 // TODO Add log
                 // Log::error(Message::AUTH_KO, __METHOD__, new $this, $request, null, json_encode($validator->errors()->toArray()));
 
-                return $this->sendError(Message::AUTH_KO, $validator->errors()->toArray(), 400);
+                return $this->sendError(Message::REGISTER_KO, $validator->errors()->toArray(), 400);
             }
 
             $user = \App\Models\User::create($data);
