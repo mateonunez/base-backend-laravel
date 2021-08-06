@@ -23,6 +23,7 @@ class Message
     public const DELETE_KO_RELATIONSHIP = "[00012] - You can't delete. There are associated entities.";
     public const BAD_REQUEST = "[00013] - Bad request.";
     public const REGISTER_KO = "[00014] - Error during registration.";
+    public const CREDENTIALS_KO = "[00015] - Invalid credentials.";
 
     /**
      * Messages

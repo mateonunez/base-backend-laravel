@@ -32,6 +32,8 @@ class AuthController extends Controller
                 return $this->sendError(Message::REGISTER_KO, $validator->errors()->toArray(), 400);
             }
 
+            $data['password'] = bcrypt($data['password']);
+
             $user = \App\Models\User::create($data);
 
             $token = $user->createToken(config('app.name'))->accessToken;
@@ -81,6 +83,8 @@ class AuthController extends Controller
                 // Log::info(Message::AUTH_OK, __METHOD__, $user, $request);
 
                 return $this->sendResponse(['token' => $token], Message::AUTH_OK);
+            } else {
+                return $this->sendError(Message::CREDENTIALS_KO);
             }
         } catch (\Exception $ex) {
             // TODO Add log
