@@ -59,4 +59,15 @@ class ControllerTest extends TestCase
         // Asserting Bad Request
         $response->assertStatus(400);
     }
+
+    /**
+     * @group controller
+     */
+    public function test_destroy_get_bad_request()
+    {
+        $response = $this->delete('/api/base/fakeId');
+
+        // Asserting Bad Request
+        $response->assertStatus(400);
+    }
 }

@@ -231,6 +231,60 @@ class Controller extends BaseController
     }
 
     /**
+     * Base method to delete an entity
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param mixed $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy(Request $request, $id)
+    {
+        try {
+            if (is_null($this->entityClass)) {
+                return $this->sendError(Message::BAD_REQUEST, [], 400);
+            }
+
+            $entity = $this->entityClass::find($id);
+
+            if (is_null($entity)) {
+                return $this->sendNotFound();
+            }
+
+            $canDelete = true;
+            $relations = ModelUtils::relations($this->entityClass);
+            foreach ($relations as $relation) {
+                if (!isset($entity->{$relation})) {
+                    continue;
+                }
+
+                if ($entity->{$relation}->count() > 0) {
+                    $canDelete = false;
+                }
+            }
+
+            if (!$canDelete) {
+                // TODO Add log
+                // Log::error(Message::DELETE_KO_RELATIONSHIP, __METHOD__, new $this->entityClass(), $request);
+
+                return $this->sendError(Message::DELETE_KO_RELATIONSHIP);
+            }
+
+            $entity->delete();
+
+            // TODO Add log
+            // Log::info(Message::DELETE_OK, __METHOD__, $entity, $request);
+
+            return $this->sendResponse([], Message::DELETE_OK);
+        } catch (\Exception $ex) {
+            // TODO Add log
+            // Log::error(Message::DELETE_KO, __METHOD__, new $this->entityClass(), $request, $ex);
+
+            return $this->sendError(Message::DELETE_KO);
+        }
+    }
+
+    /**
      * Method to send response
      *
      * @param array $payload
