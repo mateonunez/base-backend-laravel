@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-use App\Core\SchemaUtils;
+use App\Core\Utils\SchemaUtils;
 
 trait BelongsToUser
 {
@@ -16,7 +16,7 @@ trait BelongsToUser
     public function fillUser(
         string $userColumn = 'user_id'
     ) {
-        if (SchemaUtils::hasAttribute($userColumn, $this)) {
+        if (\Illuminate\Support\Facades\Schema::hasColumn($this->getTable(), $userColumn)) {
             $this->{$userColumn} = \Illuminate\Support\Facades\Auth::user()->id;
         }
     }

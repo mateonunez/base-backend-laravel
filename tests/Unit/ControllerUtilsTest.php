@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use App\Core\ControllerUtils;
+use App\Core\Utils\ControllerUtils;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ControllerUtilsTest extends TestCase
