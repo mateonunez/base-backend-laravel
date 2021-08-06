@@ -12,7 +12,7 @@ class ModelUtils
      *
      * @return bool
      */
-    public static function usesTrait(mixed $class, mixed $trait): bool
+    public static function usesTrait($class, $trait): bool
     {
         return in_array(
             $trait,
@@ -28,7 +28,7 @@ class ModelUtils
      *
      * @return array
      */
-    public static function relations(mixed $class): array
+    public static function relations($class): array
     {
         $reflector = new \ReflectionClass($class);
 
