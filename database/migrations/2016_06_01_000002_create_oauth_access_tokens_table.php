@@ -33,7 +33,8 @@ class CreateOauthAccessTokensTable extends Migration
         $this->schema->create('oauth_access_tokens', function (Blueprint $table) {
             $table->string('id', 100)->primary();
             $table->foreignUuid('user_id')
-                ->constrained('users');
+                ->constrained('users')
+                ->onDelete('cascade');
             $table->uuid('client_id');
             $table->string('name')->nullable();
             $table->text('scopes')->nullable();
