@@ -34,13 +34,12 @@ class AuthController extends Controller
 
             $user = \App\Models\User::create($data);
 
-
             $token = $user->createToken(config('app.name'))->accessToken;
 
             // TODO Add log
             // Log::info(Message::AUTH_OK, __METHOD__, $user, $request);
 
-            return $this->sendResponse(['token' => $token], Message::REGISTER_OK);
+            return $this->sendResponse(['token' => $token], Message::REGISTER_OK, 201);
         } catch (\Exception $ex) {
             // TODO Add log
             // Log::error(Message::AUTH_KO, __METHOD__, new $this, $request, $ex);
