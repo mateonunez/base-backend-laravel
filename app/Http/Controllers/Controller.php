@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Core\Helper;
 use App\Core\Message;
 use Illuminate\Http\Request;
-use App\Core\ControllerUtils;
+use App\Core\Utils\ControllerUtils;
+use App\Core\Utils\ModelUtils;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
@@ -42,23 +42,17 @@ class Controller extends BaseController
 
             $query = $request->query();
 
-            // Getting filters
             $filters = ControllerUtils::getRequestFilters($query);
 
-            // Getting relationships
             $relationships = ControllerUtils::getRequestRelationships($query);
 
-            // Getting order
             $orderBy = ControllerUtils::getRequestOrderBy($query);
 
-            // Getting pagination
             $paginate = ControllerUtils::getPaginate($query);
 
-            // Retrieving entities
             $entities = $this->entityClass::with($relationships)
                 ->where($filters);
 
-            // Ordering entities
             foreach ($orderBy as $order) {
                 $entities->orderBy($order[0], $order[1]);
             }
@@ -67,10 +61,7 @@ class Controller extends BaseController
                 ? $entities->paginate($this->perPage)->withQueryString()->toArray()
                 : $entities->get()->toArray();
 
-            return $this->sendResponse(
-                $entities,
-                Message::INDEX_OK
-            );
+            return $this->sendResponse($entities, Message::INDEX_OK);
         } catch (\Illuminate\Database\QueryException $ex) {
             // TODO Add log
             // Log::error(Message::FILTER_KO, __METHOD__, new $this->entityClass(), $request, $ex);
@@ -106,7 +97,6 @@ class Controller extends BaseController
 
             $query = $request->query();
 
-            // Geting relationships
             $relationships = ControllerUtils::getRequestRelationships($query);
 
             $entity = $this->entityClass::with($relationships)
@@ -116,10 +106,7 @@ class Controller extends BaseController
                 return $this->sendNotFound();
             }
 
-            return $this->sendResponse(
-                $entity->toArray(),
-                Message::SHOW_OK
-            );
+            return $this->sendResponse($entity->toArray(), Message::SHOW_OK);
         } catch (\Illuminate\Database\Eloquent\RelationNotFoundException $ex) {
             // TODO Add log
             // Log::error(Message::RELATION_KO, __METHOD__, new $this->entityClass(), $request, $ex);
@@ -147,8 +134,7 @@ class Controller extends BaseController
                 return $this->sendError(Message::BAD_REQUEST, [], 400);
             }
 
-            // Check if entity uses StoreValidation trait
-            $entityUsesStoreValidation = Helper::classUsesTrait(
+            $entityUsesStoreValidation = ModelUtils::usesTrait(
                 App\Traits\StoreValidation::class,
                 $this->entityClass::class
             );
@@ -160,23 +146,19 @@ class Controller extends BaseController
                 dd($validated);
             }
 
-            // Retrieving data from request
             $data = $request->all();
 
-            // Initializing a new entity
             $entity = new $this->entityClass;
-
-            // Filling all data in requset
             $entity->fill($data);
 
-            // Check if entity uses BelongsToUser trait
-            $entityUsesBelongsToUser = Helper::classUsesTrait(
+            $entityUsesBelongsToUser = ModelUtils::usesTrait(
                 \App\Traits\BelongsToUser::class,
                 $this->entityClass::class()
             );
             if ($entityUsesBelongsToUser && !isset($request->user_id)) {
                 $entity->fillUser();
 
+                // TODO to be implement
                 dd($entity);
             }
 
@@ -186,16 +168,65 @@ class Controller extends BaseController
             // TODO add log
             // Log::info(Message::CREATE_OK, __METHOD__, $entity, $request);
 
-            return $this->sendResponse(
-                $entity->fresh()->toArray(),
-                Message::CREATE_OK,
-                201
-            );
+            return $this->sendResponse($entity->fresh()->toArray(), Message::CREATE_OK, 201);
         } catch (\Exception $ex) {
             // TODO Add log
             // Log::error(Message::CREATE_KO, __METHOD__, new $this->entityClass(), $request, $ex);
 
             return $this->sendError(Message::CREATE_KO);
+        }
+    }
+
+    /**
+     * Base method to update an entity
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param mixed $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(Request $request, $id)
+    {
+        try {
+            if (is_null($this->entityClass)) {
+                return $this->sendError(Message::BAD_REQUEST, [], 400);
+            }
+
+            $data = $request->all();
+
+            $entity = $this->entityClass::find($id);
+
+            if (is_null($entity)) {
+                // TODO Add log
+                // Log::error(Message::UPDATE_KO, __METHOD__, new $this->entityClass(), $request);
+
+                return $this->sendNotFound();
+            }
+
+            $entityUsesUpdateValidation = ModelUtils::usesTrait(
+                App\Traits\UpdateValidation::class,
+                $this->entityClass::class
+            );
+            if ($entityUsesUpdateValidation) {
+                $updateValidationRules = $this->entityClass->getUpdateValidationRules();
+                $validated = $request->validate($updateValidationRules);
+
+                // TODO to be implement
+                dd($validated);
+            }
+
+            $entity->fill($data);
+            $entity->save();
+
+            // TODO Add log
+            // Log::info(Message::UPDATE_OK, __METHOD__, $entity, $request);
+
+            return $this->sendResponse($entity->fresh()->toArray(), Message::UPDATE_OK);
+        } catch (\Exception $ex) {
+            // TODO Add log
+            // Log::error(Message::UPDATE_KO, __METHOD__, new $this->entityClass(), $request, $ex);
+
+            return $this->sendError(Message::UPDATE_KO);
         }
     }
 
