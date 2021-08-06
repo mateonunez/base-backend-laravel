@@ -19,7 +19,7 @@ class Controller extends BaseController
     /**
      * @var mixed
      */
-    protected $entityClass;
+    protected $model;
 
     /**
      * @var int
@@ -36,7 +36,7 @@ class Controller extends BaseController
     public function index(Request $request)
     {
         try {
-            if (is_null($this->entityClass)) {
+            if (is_null($this->model)) {
                 return $this->sendError(Message::BAD_REQUEST, [], 400);
             }
 
@@ -50,7 +50,7 @@ class Controller extends BaseController
 
             $paginate = ControllerUtils::getPaginate($query);
 
-            $entities = $this->entityClass::with($relationships)
+            $entities = $this->model::with($relationships)
                 ->where($filters);
 
             foreach ($orderBy as $order) {
@@ -64,17 +64,17 @@ class Controller extends BaseController
             return $this->sendResponse($entities, Message::INDEX_OK);
         } catch (\Illuminate\Database\QueryException $ex) {
             // TODO Add log
-            // Log::error(Message::FILTER_KO, __METHOD__, new $this->entityClass(), $request, $ex);
+            // Log::error(Message::FILTER_KO, __METHOD__, new $this->model(), $request, $ex);
 
             return $this->sendError(Message::FILTER_KO);
         } catch (\Illuminate\Database\Eloquent\RelationNotFoundException $ex) {
             // TODO Add log
-            // Log::error(Message::RELATION_KO, __METHOD__, new $this->entityClass(), $request, $ex);
+            // Log::error(Message::RELATION_KO, __METHOD__, new $this->model(), $request, $ex);
 
             return $this->sendError(Message::RELATION_KO);
         } catch (\Exception $ex) {
             // TODO Add log
-            // Log::error(Message::INDEX_KO, __METHOD__, new $this->entityClass(), $request, $ex);
+            // Log::error(Message::INDEX_KO, __METHOD__, new $this->model(), $request, $ex);
 
             return $this->sendError(Message::INDEX_KO  . $ex->getMessage());
         }
@@ -91,7 +91,7 @@ class Controller extends BaseController
     public function show(Request $request, $id)
     {
         try {
-            if (is_null($this->entityClass)) {
+            if (is_null($this->model)) {
                 return $this->sendError(Message::BAD_REQUEST, [], 400);
             }
 
@@ -99,7 +99,7 @@ class Controller extends BaseController
 
             $relationships = ControllerUtils::getRequestRelationships($query);
 
-            $entity = $this->entityClass::with($relationships)
+            $entity = $this->model::with($relationships)
                 ->find($id);
 
             if (is_null($entity)) {
@@ -109,12 +109,12 @@ class Controller extends BaseController
             return $this->sendResponse($entity->toArray(), Message::SHOW_OK);
         } catch (\Illuminate\Database\Eloquent\RelationNotFoundException $ex) {
             // TODO Add log
-            // Log::error(Message::RELATION_KO, __METHOD__, new $this->entityClass(), $request, $ex);
+            // Log::error(Message::RELATION_KO, __METHOD__, new $this->model(), $request, $ex);
 
             return $this->sendError(Message::RELATION_KO);
         } catch (\Exception $ex) {
             // TODO Add log
-            // Log::error(Message::SHOW_KO, __METHOD__, new $this->entityClass(), $request, $ex);
+            // Log::error(Message::SHOW_KO, __METHOD__, new $this->model(), $request, $ex);
 
             return $this->sendError(Message::SHOW_KO);
         }
@@ -130,16 +130,16 @@ class Controller extends BaseController
     public function store(Request $request)
     {
         try {
-            if (is_null($this->entityClass)) {
+            if (is_null($this->model)) {
                 return $this->sendError(Message::BAD_REQUEST, [], 400);
             }
 
             $entityUsesStoreValidation = ModelUtils::usesTrait(
                 App\Traits\StoreValidation::class,
-                get_class($this->entityClass)
+                get_class($this->model)
             );
             if ($entityUsesStoreValidation) {
-                $storeValidationRules = $this->entityClass->getStoreValidationRules();
+                $storeValidationRules = $this->model->getStoreValidationRules();
                 $validated = $request->validate($storeValidationRules);
 
                 // TODO to be implement
@@ -148,12 +148,12 @@ class Controller extends BaseController
 
             $data = $request->all();
 
-            $entity = new $this->entityClass;
+            $entity = new $this->model;
             $entity->fill($data);
 
             $entityUsesBelongsToUser = ModelUtils::usesTrait(
                 \App\Traits\BelongsToUser::class,
-                get_class($this->entityClass)
+                get_class($this->model)
             );
             if ($entityUsesBelongsToUser && !isset($request->user_id)) {
                 $entity->fillUser();
@@ -171,7 +171,7 @@ class Controller extends BaseController
             return $this->sendResponse($entity->fresh()->toArray(), Message::CREATE_OK, 201);
         } catch (\Exception $ex) {
             // TODO Add log
-            // Log::error(Message::CREATE_KO, __METHOD__, new $this->entityClass(), $request, $ex);
+            // Log::error(Message::CREATE_KO, __METHOD__, new $this->model(), $request, $ex);
 
             return $this->sendError(Message::CREATE_KO);
         }
@@ -188,27 +188,27 @@ class Controller extends BaseController
     public function update(Request $request, $id)
     {
         try {
-            if (is_null($this->entityClass)) {
+            if (is_null($this->model)) {
                 return $this->sendError(Message::BAD_REQUEST, [], 400);
             }
 
             $data = $request->all();
 
-            $entity = $this->entityClass::find($id);
+            $entity = $this->model::find($id);
 
             if (is_null($entity)) {
                 // TODO Add log
-                // Log::error(Message::UPDATE_KO, __METHOD__, new $this->entityClass(), $request);
+                // Log::error(Message::UPDATE_KO, __METHOD__, new $this->model(), $request);
 
                 return $this->sendNotFound();
             }
 
             $entityUsesUpdateValidation = ModelUtils::usesTrait(
                 App\Traits\UpdateValidation::class,
-                get_class($this->entityClass)
+                get_class($this->model)
             );
             if ($entityUsesUpdateValidation) {
-                $updateValidationRules = $this->entityClass->getUpdateValidationRules();
+                $updateValidationRules = $this->model->getUpdateValidationRules();
                 $validated = $request->validate($updateValidationRules);
 
                 // TODO to be implement
@@ -224,7 +224,7 @@ class Controller extends BaseController
             return $this->sendResponse($entity->fresh()->toArray(), Message::UPDATE_OK);
         } catch (\Exception $ex) {
             // TODO Add log
-            // Log::error(Message::UPDATE_KO, __METHOD__, new $this->entityClass(), $request, $ex);
+            // Log::error(Message::UPDATE_KO, __METHOD__, new $this->model(), $request, $ex);
 
             return $this->sendError(Message::UPDATE_KO);
         }
@@ -241,18 +241,18 @@ class Controller extends BaseController
     public function destroy(Request $request, $id)
     {
         try {
-            if (is_null($this->entityClass)) {
+            if (is_null($this->model)) {
                 return $this->sendError(Message::BAD_REQUEST, [], 400);
             }
 
-            $entity = $this->entityClass::find($id);
+            $entity = $this->model::find($id);
 
             if (is_null($entity)) {
                 return $this->sendNotFound();
             }
 
             $canDelete = true;
-            $relations = ModelUtils::relations($this->entityClass);
+            $relations = ModelUtils::relations($this->model);
             foreach ($relations as $relation) {
                 if (!isset($entity->{$relation})) {
                     continue;
@@ -265,7 +265,7 @@ class Controller extends BaseController
 
             if (!$canDelete) {
                 // TODO Add log
-                // Log::error(Message::DELETE_KO_RELATIONSHIP, __METHOD__, new $this->entityClass(), $request);
+                // Log::error(Message::DELETE_KO_RELATIONSHIP, __METHOD__, new $this->model(), $request);
 
                 return $this->sendError(Message::DELETE_KO_RELATIONSHIP);
             }
@@ -278,7 +278,7 @@ class Controller extends BaseController
             return $this->sendResponse([], Message::DELETE_OK);
         } catch (\Exception $ex) {
             // TODO Add log
-            // Log::error(Message::DELETE_KO, __METHOD__, new $this->entityClass(), $request, $ex);
+            // Log::error(Message::DELETE_KO, __METHOD__, new $this->model(), $request, $ex);
 
             return $this->sendError(Message::DELETE_KO);
         }
