@@ -1,16 +1,34 @@
-# Base Backend
+# Base Backend Laravel
 
 ![Tests Actions](https://github.com/mateonunez/base-backend-laravel/actions/workflows/tests.yml/badge.svg)
 
 ## Setting Test Environment
 
-At first clone the `.env.testing.example` into `.env.testing`. Fill the empty variables. And create a new app key with the following command.
+Copy the `.env.testing` and fill the variables
+
+```shell
+cp .env.testing.example .env.testing
+```
+
+Generate the application key
 
 ```shell
 php artisan key:generate --env=testing
 ```
 
-Run the tests:
+Run migrations
+
+```shell
+php artisan migrate --env=testing
+```
+
+Install passport
+
+```shell
+php artisan passport:install --uuids --env=testing
+```
+
+Run the tests
 
 ```shell
 php artisan test
