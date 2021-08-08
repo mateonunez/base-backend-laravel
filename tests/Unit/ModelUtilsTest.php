@@ -5,8 +5,6 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\User;
 use App\Core\Utils\ModelUtils;
-use App\Core\Utils\ControllerUtils;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ModelUtilsTest extends TestCase
 {
