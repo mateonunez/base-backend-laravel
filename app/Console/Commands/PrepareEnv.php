@@ -60,7 +60,7 @@ class PrepareEnv extends Command
         }
 
         if ($generate) {
-            $resultKey = $this->generateKeyApplication($testing);
+            $resultKey = $this->generateApplicationKey($testing);
             $this->info($resultKey);
         }
 
@@ -86,7 +86,7 @@ class PrepareEnv extends Command
         $env = $testing ? '.env.testing' : '.env';
         $envRealpath = base_path() . DIRECTORY_SEPARATOR . $env;
 
-        $envExample = $testing ? '.env.example' : '.env.testing.example';
+        $envExample = $testing ? '.env.testing.example' : '.env.example';
         $envExampleRealpath = base_path() . DIRECTORY_SEPARATOR . $envExample;
 
         if (File::exists($envRealpath)) {
