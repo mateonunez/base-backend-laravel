@@ -14,10 +14,14 @@ class ModelUtils
      */
     public static function usesTrait($class, $trait): bool
     {
+        $class = new \ReflectionClass($class);
+        $classTraits = $class->getTraits();
+
+        $trait = new \ReflectionClass($trait);
+
         return in_array(
             $trait,
-            class_uses_recursive($class),
-            true
+            $classTraits
         );
     }
 

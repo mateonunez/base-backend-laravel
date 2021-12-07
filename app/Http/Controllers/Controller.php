@@ -135,8 +135,8 @@ class Controller extends BaseController
             }
 
             $entityUsesStoreValidation = ModelUtils::usesTrait(
-                App\Traits\StoreValidation::class,
-                get_class($this->model)
+                \App\Traits\StoreValidation::class,
+                get_class(new $this->model)
             );
             if ($entityUsesStoreValidation) {
                 $storeValidationRules = $this->model->getStoreValidationRules();
@@ -153,7 +153,7 @@ class Controller extends BaseController
 
             $entityUsesBelongsToUser = ModelUtils::usesTrait(
                 \App\Traits\BelongsToUser::class,
-                get_class($this->model)
+                get_class(new $this->model)
             );
             if ($entityUsesBelongsToUser && !isset($request->user_id)) {
                 $entity->fillUser();
@@ -205,10 +205,10 @@ class Controller extends BaseController
 
             $entityUsesUpdateValidation = ModelUtils::usesTrait(
                 App\Traits\UpdateValidation::class,
-                get_class($this->model)
+                get_class(new $this->model)
             );
             if ($entityUsesUpdateValidation) {
-                $updateValidationRules = $this->model->getUpdateValidationRules();
+                $updateValidationRules = new $this->model->getUpdateValidationRules();
                 $validated = $request->validate($updateValidationRules);
 
                 // TODO to be implement
