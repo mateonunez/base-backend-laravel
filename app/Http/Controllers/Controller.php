@@ -135,8 +135,8 @@ class Controller extends BaseController
             }
 
             $entityUsesStoreValidation = ModelUtils::usesTrait(
-                App\Traits\StoreValidation::class,
-                get_class($this->model)
+                \App\Traits\StoreValidation::class,
+                get_class($this->model())
             );
             if ($entityUsesStoreValidation) {
                 $storeValidationRules = $this->model->getStoreValidationRules();
