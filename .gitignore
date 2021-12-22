@@ -6,5 +6,3 @@ storage/*.key
 storage/logs
 
 vendor/
-
-public/
