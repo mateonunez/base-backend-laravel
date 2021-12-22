@@ -31,4 +31,6 @@ Route::group([
 Route::apiResources([
     // Just for tests
     '/base' => \App\Http\Controllers\Controller::class,
+
+    '/users' => \App\Http\Controllers\UserController::class,
 ]);

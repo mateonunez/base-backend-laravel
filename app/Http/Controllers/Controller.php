@@ -204,9 +204,10 @@ class Controller extends BaseController
             }
 
             $entityUsesUpdateValidation = ModelUtils::usesTrait(
-                App\Traits\UpdateValidation::class,
+                \App\Traits\UpdateValidation::class,
                 get_class(new $this->model)
             );
+
             if ($entityUsesUpdateValidation) {
                 $updateValidationRules = new $this->model->getUpdateValidationRules();
                 $validated = $request->validate($updateValidationRules);
@@ -226,7 +227,7 @@ class Controller extends BaseController
             // TODO Add log
             // Log::error(Message::UPDATE_KO, __METHOD__, new $this->model(), $request, $ex);
 
-            return $this->sendError(Message::UPDATE_KO);
+            return $this->sendError(Message::UPDATE_KO . ' ' . $ex->getMessage());
         }
     }
 
