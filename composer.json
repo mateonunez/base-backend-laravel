@@ -2,8 +2,12 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
+    "platform-check": false,
     "require": {
         "php": "^7.3|^8.0",
         "fideloper/proxy": "^4.4",
