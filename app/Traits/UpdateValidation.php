@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-trait StoreValidation
+trait UpdateValidation
 {
     /**
      * Gets the update validation rule using Schema to
