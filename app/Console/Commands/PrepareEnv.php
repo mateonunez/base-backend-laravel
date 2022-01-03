@@ -72,6 +72,10 @@ class PrepareEnv extends Command
         $resultPassport = $this->installPassport($testing);
         $this->info($resultPassport);
 
+        // Running Seeders
+        $resultSeeders = $this->runSeeders($testing);
+        $this->info($resultSeeders);
+
         return 0;
     }
 
@@ -151,6 +155,20 @@ class PrepareEnv extends Command
     public function installPassport($testing)
     {
         $keyGenerateCommand = 'passport:install --uuids' . ($testing ? ' --env=testing' : '');
+        Artisan::call($keyGenerateCommand, [], $this->getOutput());
+
+        return trim(Artisan::output());
+    }
+
+    /**
+     * Runs the seeders
+     *
+     * @param bool $testing
+     * @return string
+     */
+    public function runSeeders($testing)
+    {
+        $keyGenerateCommand = 'db:seed' . ($testing ? ' --env=testing' : '');
         Artisan::call($keyGenerateCommand, [], $this->getOutput());
 
         return trim(Artisan::output());
