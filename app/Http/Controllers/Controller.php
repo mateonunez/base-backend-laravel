@@ -167,8 +167,19 @@ class Controller extends BaseController
 
             // TODO add log
             // Log::info(Message::CREATE_OK, __METHOD__, $entity, $request);
+            $entity = $entity->fresh();
 
-            return $this->sendResponse($entity->fresh()->toArray(), Message::CREATE_OK, 201);
+            $entityUsesRelationships = ModelUtils::usesTrait(
+                get_class(new $this->model()),
+                \App\Traits\HasRelationships::class
+            );
+
+            if ($entityUsesRelationships) {
+                $relationships = array_keys($entity->getRelationships());
+                $entity = $this->model::with($relationships)->find($entity->id);
+            }
+
+            return $this->sendResponse($entity->toArray(), Message::CREATE_OK, 201);
         } catch (\Exception $ex) {
             // TODO Add log
             // Log::error(Message::CREATE_KO, __METHOD__, new $this->model(), $request, $ex);
@@ -222,7 +233,19 @@ class Controller extends BaseController
             // TODO Add log
             // Log::info(Message::UPDATE_OK, __METHOD__, $entity, $request);
 
-            return $this->sendResponse($entity->fresh()->toArray(), Message::UPDATE_OK);
+            $entity = $entity->fresh();
+
+            $entityUsesRelationships = ModelUtils::usesTrait(
+                get_class(new $this->model()),
+                \App\Traits\HasRelationships::class
+            );
+
+            if ($entityUsesRelationships) {
+                $relationships = array_keys($entity->getRelationships());
+                $entity = $this->model::with($relationships)->find($entity->id);
+            }
+
+            return $this->sendResponse($entity->toArray(), Message::UPDATE_OK);
         } catch (\Exception $ex) {
             // TODO Add log
             // Log::error(Message::UPDATE_KO, __METHOD__, new $this->model(), $request, $ex);
